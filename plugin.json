@@ -1,0 +1,51 @@
+{
+    "id": "com.mattermost.voice",
+    "name": "Voice",
+    "description": "Mattermost plugin to enable voice messaging.",
+    "version": "0.1.0",
+    "min_server_version": "5.12.0",
+    "server": {
+        "executables": {
+            "linux-amd64": "server/dist/plugin-linux-amd64",
+            "darwin-amd64": "server/dist/plugin-darwin-amd64",
+            "windows-amd64": "server/dist/plugin-windows-amd64.exe"
+        }
+    },
+    "webapp": {
+        "bundle_path": "webapp/dist/main.js"
+    },
+    "settings_schema": {
+        "header": "",
+        "footer": "",
+        "settings": [
+            {
+                "key": "VoiceMaxDuration",
+                "display_name": "Max Duration",
+                "type": "number",
+                "help_text": "Max duration allowed (in seconds) for voice messages.",
+                "default": 300
+            },
+            {
+                "key": "VoiceAudioBitrate",
+                "display_name": "Audio Quality",
+                "type": "dropdown",
+                "help_text": "Audio quality of voice messages. This setting affects recording size.",
+                "default": "64",
+                "options": [
+                    {
+                        "display_name": "High (128 kbps)",
+                        "value": "128"
+                    },
+                    {
+                        "display_name": "Normal (64 kbps)",
+                        "value": "64"
+                    },
+                    {
+                        "display_name": "Low (48 kbps)",
+                        "value": "48"
+                    }
+                ]
+            }
+        ]
+    }
+}

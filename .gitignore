@@ -1,0 +1,4 @@
+dist
+public/recorder*
+public/encoder*
+webapp/src/client/recorder.js

@@ -1,12 +1,8 @@
 # Mattermost Voice Plugin
 
-This plugin adds support for basic voice messaging in Mattermost.
+This plugin adds support for basic **voice messaging** in Mattermost.
 
 ![](https://i.imgur.com/hPZ3GhG.gif)
-
-## Usage
-
-To start sending a voice message you can either use the ```/voice``` slash command or the existing file attachment functionality as shown in the picture above.
 
 ## Demo
 
@@ -14,13 +10,34 @@ A demo server running the latest version of this plugin is located [here](https:
 You can login using the following details:
 
 ```
-User: demo
+Username: demo
 Password: password
 ```
 
-## Building
+## Usage
 
-User ```make dist``` to build this plugin.
+To start sending a voice message you can either use the ```/voice``` slash command or the existing file attachment functionality as shown in the picture above.
+
+## Installation
+
+1. Download the latest version from the [release page](https://github.com/streamer45/mattermost-plugin-voice/releases).
+2. Upload the file through **System Console > Plugins > Plugin Management**, or manually upload it to the Mattermost server under plugin directory. See [documentation](https://docs.mattermost.com/administration/plugins.html#set-up-guide) for more details.
+
+## Development
+
+Use ```make dist``` to build this plugin.
+
+Use `make deploy` to deploy the plugin to your local server.
+
+Before running `make deploy` you need to set a few environment variables:
+
+```
+export MM_SERVICESETTINGS_SITEURL=http://localhost:8065
+export MM_ADMIN_USERNAME=admin
+export MM_ADMIN_PASSWORD=password
+```
+
+For more details on how to develop a plugin refer to the official [documentation](https://developers.mattermost.com/extend/plugins/).
 
 ## License
 

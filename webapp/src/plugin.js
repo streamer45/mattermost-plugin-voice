@@ -20,13 +20,12 @@ export default class VoicePlugin {
         );
         registry.registerPostTypeComponent('custom_voice', PostType);
         registry.registerReducer(reducer);
-        registry.registerSlashCommandWillBePostedHook((cmd, args) => {
-            const cmdArgs = cmd.split(' ');
-            if (!cmdArgs || cmdArgs[0] !== '/voice') {
+        registry.registerSlashCommandWillBePostedHook((message, args) => {
+            if (message.trim() === '/voice') {
+                recordVoiceMessage(args.channel_id, args.root_id)(store.dispatch, store.getState);
                 return {};
             }
-            recordVoiceMessage(args.channel_id, args.root_id)(store.dispatch, store.getState);
-            return {};
+            return {message, args};
         });
     }
 }

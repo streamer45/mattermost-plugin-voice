@@ -103,6 +103,7 @@ MP3WASM_FULLNAME="mp3enc-wasm-${MP3WASM_VERSION}"
 .PHONY: mp3-wasm
 mp3-wasm:
 	mkdir -p dist && \
+	mkdir -p public && \
 	cd dist && \
 	curl -L -o "${MP3WASM_FULLNAME}.tar.gz" -C - "https://github.com/streamer45/mp3rec-wasm/releases/download/v${MP3WASM_VERSION}/${MP3WASM_FULLNAME}.tar.gz" 2> /dev/null && \
 	cd ../public && \

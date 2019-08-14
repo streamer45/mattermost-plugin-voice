@@ -1,4 +1,4 @@
-module github.com/mattermost/mattermost-plugin-starter-template
+module github.com/streamer45/mattermost-plugin-voice
 
 go 1.12
 

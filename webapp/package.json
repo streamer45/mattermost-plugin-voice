@@ -5,9 +5,12 @@
   "main": "src/index.js",
   "scripts": {
     "build": "webpack --mode=production",
-    "lint": "eslint --ignore-pattern node_modules --ignore-pattern dist --ext .js --ext .jsx . --quiet",
-    "fix": "eslint --ignore-pattern node_modules --ignore-pattern dist --ext .js --ext .jsx . --quiet --fix",
-    "test": "jest --forceExit --detectOpenHandles --verbose"
+    "debug": "webpack --mode=none",
+    "lint": "eslint --ignore-pattern node_modules --ignore-pattern dist --ext .js --ext .jsx --ext tsx --ext ts . --quiet",
+    "fix": "eslint --ignore-pattern node_modules --ignore-pattern dist --ext .js --ext .jsx --ext tsx --ext ts . --quiet --fix",
+    "test": "jest --forceExit --detectOpenHandles --verbose",
+    "test:watch": "jest --watch",
+    "test-ci": "jest --forceExit --detectOpenHandles --maxWorkers=2"
   },
   "author": "streamer45",
   "license": "MIT",
@@ -19,28 +22,83 @@
     "@babel/polyfill": "7.4.4",
     "@babel/preset-env": "7.4.5",
     "@babel/preset-react": "7.0.0",
+    "@babel/preset-typescript": "^7.9.0",
     "@babel/runtime": "7.4.5",
-    "@emotion/babel-preset-css-prop": "^10.0.14",
+    "@emotion/babel-preset-css-prop": "^10.0.27",
+    "@types/jest": "^25.2.1",
     "babel-eslint": "10.0.2",
+    "babel-jest": "24.9.0",
     "babel-loader": "8.0.6",
-    "css-loader": "^3.1.0",
+    "babel-plugin-typescript-to-proptypes": "^1.3.2",
+    "css-loader": "^3.4.2",
+    "enzyme": "3.11.0",
+    "enzyme-adapter-react-16": "1.15.2",
+    "enzyme-to-json": "3.4.3",
     "eslint": "6.0.1",
     "eslint-import-resolver-webpack": "0.11.1",
     "eslint-plugin-import": "2.18.0",
     "eslint-plugin-react": "7.14.2",
     "file-loader": "4.0.0",
-    "jest": "^24.8.0",
-    "style-loader": "^0.23.1",
+    "identity-obj-proxy": "3.0.0",
+    "jest": "24.9.0",
+    "jest-canvas-mock": "2.2.0",
+    "jest-junit": "10.0.0",
+    "mattermost-webapp": "github:mattermost/mattermost-webapp#23f5f93d9f12a7e2b5623e5cee6814366abd9a0f",
+    "style-loader": "^1.1.3",
     "webpack": "4.35.0",
     "webpack-cli": "3.3.5"
   },
   "dependencies": {
-    "@emotion/core": "^10.0.14",
-    "mattermost-redux": "^5.13.0",
+    "@emotion/core": "^10.0.28",
+    "core-js": "^2.6.10",
+    "mattermost-redux": "^5.12.0",
     "react": "16.8.6",
-    "react-intl": "^2.9.0",
+    "react-intl": "^4.3.1",
     "react-redux": "5.0.7",
     "redux": "4.0.1",
-    "superagent": "^5.1.0"
+    "superagent": "^5.2.2",
+    "typescript": "^3.8.3"
+  },
+  "jest": {
+    "snapshotSerializers": [
+      "<rootDir>/node_modules/enzyme-to-json/serializer"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/non_npm_dependencies/"
+    ],
+    "clearMocks": true,
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}"
+    ],
+    "coverageReporters": [
+      "lcov",
+      "text-summary"
+    ],
+    "moduleNameMapper": {
+      "^.+\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "identity-obj-proxy",
+      "^.+\\.(css|less|scss)$": "identity-obj-proxy",
+      "^.*i18n.*\\.(json)$": "<rootDir>/tests/i18n_mock.json",
+      "^bundle-loader\\?lazy\\!(.*)$": "$1"
+    },
+    "moduleDirectories": [
+      "",
+      "node_modules",
+      "non_npm_dependencies"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!react-native|react-router|mattermost-webapp)"
+    ],
+    "setupFiles": [
+      "jest-canvas-mock"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.js"
+    ],
+    "testURL": "http://localhost:8065"
   }
 }

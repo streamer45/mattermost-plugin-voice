@@ -17,7 +17,7 @@ include build/setup.mk
 
 BUNDLE_NAME ?= $(PLUGIN_ID)-$(PLUGIN_VERSION).tar.gz
 
-# Include custom makefile, if pressent
+# Include custom makefile, if present
 ifneq ($(wildcard build/custom.mk),)
 	include build/custom.mk
 endif
@@ -119,6 +119,13 @@ ifneq ($(HAS_WEBAPP),)
 	cd webapp && $(NPM) run build;
 endif
 
+## Builds the webapp in debug mode, if it exists.
+webapp-debug: mp3-wasm webapp/.npminstall
+ifneq ($(HAS_WEBAPP),)
+	cd webapp && \
+	$(NPM) run debug;
+endif
+
 ## Generates a tar bundle of the plugin for install.
 .PHONY: bundle
 bundle:
@@ -148,27 +155,21 @@ endif
 dist:	apply server webapp bundle
 
 ## Installs the plugin to a (development) server.
+## It uses the API if appropriate environment variables are defined,
+## and otherwise falls back to trying to copy the plugin to a sibling mattermost-server directory.
 .PHONY: deploy
 deploy: dist
-## It uses the API if appropriate environment variables are defined,
-## or copying the files directly to a sibling mattermost-server directory.
-ifneq ($(and $(MM_SERVICESETTINGS_SITEURL),$(MM_ADMIN_USERNAME),$(MM_ADMIN_PASSWORD),$(CURL)),)
-	@echo "Installing plugin via API"
-	$(eval TOKEN := $(shell curl -i --post301 --location $(MM_SERVICESETTINGS_SITEURL) -X POST $(MM_SERVICESETTINGS_SITEURL)/api/v4/users/login -d '{"login_id": "$(MM_ADMIN_USERNAME)", "password": "$(MM_ADMIN_PASSWORD)"}' | grep Token | cut -f2 -d' ' 2> /dev/null))
-	@curl -s --post301 --location $(MM_SERVICESETTINGS_SITEURL) -H "Authorization: Bearer $(TOKEN)" -X POST $(MM_SERVICESETTINGS_SITEURL)/api/v4/plugins -F "plugin=@dist/$(BUNDLE_NAME)" -F "force=true" > /dev/null && \
-		curl -s --post301 --location $(MM_SERVICESETTINGS_SITEURL) -H "Authorization: Bearer $(TOKEN)" -X POST $(MM_SERVICESETTINGS_SITEURL)/api/v4/plugins/$(PLUGIN_ID)/enable > /dev/null && \
-		echo "OK." || echo "Sorry, something went wrong."
-else ifneq ($(wildcard ../mattermost-server/.*),)
-	@echo "Installing plugin via filesystem. Server restart and manual plugin enabling required"
-	mkdir -p ../mattermost-server/plugins
-	tar -C ../mattermost-server/plugins -zxvf dist/$(BUNDLE_NAME)
-else
-	@echo "No supported deployment method available. Install plugin manually."
-endif
+	./build/bin/deploy $(PLUGIN_ID) dist/$(BUNDLE_NAME)
+
+.PHONY: debug-deploy
+debug-deploy: debug-dist deploy
+
+.PHONY: debug-dist
+debug-dist: apply server webapp-debug bundle
 
 ## Runs any lints and unit tests defined for the server and webapp, if they exist.
 .PHONY: test
-test: webapp/.npminstall
+test: mp3-wasm webapp/.npminstall
 ifneq ($(HAS_SERVER),)
 	$(GO) test -v $(GO_TEST_FLAGS) ./server/...
 endif
@@ -203,16 +204,18 @@ clean:
 	rm -fr public/encoder.wasm
 	rm -rf public/recorder.worker.js
 ifneq ($(HAS_SERVER),)
+	rm -fr server/coverage.txt
 	rm -fr server/dist
 endif
 ifneq ($(HAS_WEBAPP),)
 	rm -fr webapp/.npminstall
+	rm -fr webapp/junit.xml
 	rm -fr webapp/dist
 	rm -fr webapp/node_modules
 	rm -rf webapp/src/client/recorder.js
 endif
 	rm -fr build/bin/
 
-# Help documentatin à la https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
+# Help documentation à la https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
 	@cat Makefile | grep -v '\.PHONY' |  grep -v '\help:' | grep -B1 -E '^[a-zA-Z0-9_.-]+:.*' | sed -e "s/:.*//" | sed -e "s/^## //" |  grep -v '\-\-' | sed '1!G;h;$$!d' | awk 'NR%2{printf "\033[36m%-30s\033[0m",$$0;next;}1' | sort

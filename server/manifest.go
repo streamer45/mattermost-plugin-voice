@@ -17,7 +17,7 @@ const manifestStr = `
   "description": "Mattermost plugin to enable voice messaging.",
   "homepage_url": "https://github.com/streamer45/mattermost-plugin-voice",
   "support_url": "https://github.com/streamer45/mattermost-plugin-voice/issues",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "min_server_version": "5.12.0",
   "server": {
     "executables": {

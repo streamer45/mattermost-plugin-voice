@@ -40,11 +40,10 @@ export const sendRecording = (channelId, rootId) => (dispatch) => {
     closeRecordingModal()(dispatch);
 };
 
-export const recordVoiceMessage = () => (dispatch, getState) => {
+export const recordVoiceMessage = (channelId, rootId) => (dispatch) => {
     // console.log('recordVoiceMessage');
     openRecordingModal()(dispatch);
-    const channelId = getState().entities.channels.currentChannelId;
-    Client.startRecording(channelId).then(() => {
+    Client.startRecording(channelId, rootId).then(() => {
         dispatch({
             type: START_RECORDING,
         });

@@ -33,8 +33,10 @@ export default class Client {
         });
     }
 
-    startRecording() {
+    startRecording(channelId, rootId) {
         // console.log('client: start recording');
+        this.channelId = channelId || null;
+        this.rootId = rootId || null;
         this._recording = null;
         return this.recorder.start().then(() => {
             this.timerID = setInterval(() => {
@@ -65,6 +67,7 @@ export default class Client {
 
     _sendRecording({channelId, rootId, recording}) {
         const filename = `${new Date().getTime() - recording.duration}.mp3`;
+
         return request.
             post(Client4.getFilesRoute()).
             set(Client4.getOptions({method: 'post'}).headers).
@@ -89,21 +92,23 @@ export default class Client {
     }
 
     sendRecording(channelId, rootId) {
-        if (!channelId) {
+        if (!this.channelId && !channelId) {
             return Promise.reject(new Error('channel id is required'));
         }
+        const cId = this.channelId ? this.channelId : channelId;
+        const rId = !this.channelId && rootId ? rootId : this.rootId;
         // console.log('client: send recording');
         if (this._recording) {
             return this._sendRecording({
-                channelId,
-                rootId,
+                channelId: cId,
+                rootId: rId,
                 recording: this._recording,
             });
         }
         return this.recorder.stop().then((res) => {
             return this._sendRecording({
-                channelId,
-                rootId,
+                channelId: cId,
+                rootId: rId,
                 recording: res,
             });
         });

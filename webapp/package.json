@@ -1,6 +1,6 @@
 {
   "name": "voice",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Mattermost plugin to enable voice messaging.",
   "main": "src/index.js",
   "scripts": {

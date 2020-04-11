@@ -19,6 +19,8 @@ export default class Root extends React.Component {
     static propTypes = {
         visible: PropTypes.bool.isRequired,
         duration: PropTypes.number.isRequired,
+        channelId: PropTypes.string.isRequired,
+        rootId: PropTypes.string,
         cancel: PropTypes.func.isRequired,
         send: PropTypes.func.isRequired,
         theme: PropTypes.object.isRequired,
@@ -32,6 +34,10 @@ export default class Root extends React.Component {
         const msecs = this.props.duration;
         const secs = Math.round(msecs / 1000);
         return pad2nozero(secs / 60) + ':' + pad2(secs % 60);
+    }
+
+    send = () => {
+        this.props.send(this.props.channelId, this.props.rootId);
     }
 
     render() {
@@ -56,7 +62,7 @@ export default class Root extends React.Component {
                     >{'Cancel'}</button>
                     <button
                         className='voice-recording-button'
-                        onClick={this.props.send}
+                        onClick={this.send}
                         style={style.button}
                     >{'Send'}</button>
                 </div>
@@ -83,6 +89,7 @@ const getStyle = (theme) => ({
         backgroundColor: theme.centerChannelBg,
         color: theme.centerChannelColor,
         border: `1px solid ${changeOpacity(theme.centerChannelColor, 0.1)}`,
+        fontSize: '1.3em',
     },
     button: {
         background: 'none',

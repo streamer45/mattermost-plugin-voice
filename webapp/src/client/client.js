@@ -20,7 +20,6 @@ export default class Client {
                 // console.log('client: recorder initialized');
             });
         });
-        this.channelId = null;
         this.recorder.on('maxduration', () => {
             if (this.timerID) {
                 clearInterval(this.timerID);
@@ -34,13 +33,9 @@ export default class Client {
         });
     }
 
-    startRecording(channelId) {
-        if (!channelId) {
-            return Promise.reject(new Error('channel id is required'));
-        }
+    startRecording() {
         // console.log('client: start recording');
         this._recording = null;
-        this.channelId = channelId;
         return this.recorder.start().then(() => {
             this.timerID = setInterval(() => {
                 if (this._onUpdate && this.recorder.startTime) {
@@ -68,39 +63,49 @@ export default class Client {
         return this.recorder.cancel();
     }
 
-    _sendRecording({blob, duration}) {
-        const filename = `${new Date().getTime() - duration}.mp3`;
+    _sendRecording({channelId, rootId, recording}) {
+        const filename = `${new Date().getTime() - recording.duration}.mp3`;
         return request.
             post(Client4.getFilesRoute()).
             set(Client4.getOptions({method: 'post'}).headers).
-            attach('files', blob, filename).
-            field('channel_id', this.channelId).
+            attach('files', recording.blob, filename).
+            field('channel_id', channelId).
             accept('application/json').then((res) => {
-                const fileId = res.body.file_infos[0].id;
+                const data = {
+                    channel_id: channelId,
+                    root_id: rootId,
+                    message: 'Voice Message',
+                    type: 'custom_voice',
+                    props: {
+                        fileId: res.body.file_infos[0].id,
+                        duration: recording.duration,
+                    },
+                };
                 return request.post(Client4.getPostsRoute()).
                     set(Client4.getOptions({method: 'post'}).headers).
-                    send({
-                        channel_id: this.channelId,
-                        message: '',
-                        type: 'custom_voice',
-                        props: {
-                            fileId,
-                            duration,
-                        },
-                    }).accept('application/json');
+                    send(data).
+                    accept('application/json');
             });
     }
 
-    sendRecording() {
-        if (!this.channelId) {
+    sendRecording(channelId, rootId) {
+        if (!channelId) {
             return Promise.reject(new Error('channel id is required'));
         }
         // console.log('client: send recording');
         if (this._recording) {
-            return this._sendRecording(this._recording);
+            return this._sendRecording({
+                channelId,
+                rootId,
+                recording: this._recording,
+            });
         }
         return this.recorder.stop().then((res) => {
-            return this._sendRecording(res);
+            return this._sendRecording({
+                channelId,
+                rootId,
+                recording: res,
+            });
         });
     }
 

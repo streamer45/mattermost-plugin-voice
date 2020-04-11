@@ -5,7 +5,9 @@ const manifest = JSON.parse(`
     "id": "com.mattermost.voice",
     "name": "Voice",
     "description": "Mattermost plugin to enable voice messaging.",
-    "version": "0.1.1",
+    "homepage_url": "https://github.com/streamer45/mattermost-plugin-voice",
+    "support_url": "https://github.com/streamer45/mattermost-plugin-voice/issues",
+    "version": "0.2.0",
     "min_server_version": "5.12.0",
     "server": {
         "executables": {

@@ -3,10 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"path"
-	"strings"
+	"regexp"
 	"sync"
 	"time"
 
@@ -26,31 +24,28 @@ type Plugin struct {
 	configuration *configuration
 }
 
+var re *regexp.Regexp = regexp.MustCompile(`^\/recordings\/([A-Za-z0-9]+)$`)
+
 func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
-	config := p.getConfiguration()
+	userID := r.Header.Get("Mattermost-User-Id")
+	if userID == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	if r.URL.Path == "/config" {
+		config := p.getConfiguration()
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(config)
 		return
-	} else if strings.HasPrefix(r.URL.Path, "/recordings/") {
-
-		userID := r.Header.Get("Mattermost-User-Id")
-
-		if userID == "" {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		_, postID := path.Split(r.URL.Path)
-
+	} else if matches := re.FindStringSubmatch(r.URL.Path); len(matches) == 2 {
+		postID := matches[1]
 		if len(postID) != 26 {
 			http.NotFound(w, r)
 			return
 		}
 
 		post, err := p.API.GetPost(postID)
-
 		if err != nil || post.DeleteAt > 0 || post.Type != "custom_voice" {
 			http.NotFound(w, r)
 			return
@@ -61,17 +56,19 @@ func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Req
 			return
 		}
 
-		fileID := fmt.Sprintf("%v", post.Props["fileId"])
+		fileID, ok := post.Props["fileId"].(string)
+		if !ok {
+			http.Error(w, "Bad request", http.StatusBadRequest)
+			return
+		}
 
 		info, err := p.API.GetFileInfo(fileID)
-
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
 
 		file, err := p.API.GetFile(fileID)
-
 		if err != nil {
 			http.NotFound(w, r)
 			return
@@ -80,15 +77,12 @@ func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Req
 		if info.MimeType != "" {
 			w.Header().Set("Content-Type", info.MimeType)
 		}
-
 		w.Header().Set("X-Frame-Options", "DENY")
 		w.Header().Set("Content-Security-Policy", "Frame-ancestors 'none'")
 
 		reader := bytes.NewReader(file)
-
 		secs := int64(info.UpdateAt / 1000)
 		ns := int64((info.UpdateAt - (secs * 1000)) * 1000000)
-
 		http.ServeContent(w, r, info.Name, time.Unix(secs, ns), reader)
 
 		return

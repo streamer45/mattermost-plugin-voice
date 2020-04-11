@@ -29,12 +29,12 @@ export const cancelRecording = () => (dispatch) => {
     closeRecordingModal()(dispatch);
 };
 
-export const sendRecording = () => (dispatch) => {
+export const sendRecording = (channelId, rootId) => (dispatch) => {
     // console.log('send recording');
     dispatch({
         type: STOP_RECORDING,
     });
-    Client.sendRecording().then(() => {
+    Client.sendRecording(channelId, rootId).then(() => {
         // console.log('DONE');
     });
     closeRecordingModal()(dispatch);

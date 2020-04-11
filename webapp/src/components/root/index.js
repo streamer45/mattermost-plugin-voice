@@ -6,10 +6,14 @@ import Root from './root';
 const connect = window.ReactRedux.connect;
 const bindActionCreators = window.Redux.bindActionCreators;
 
-const mapStateToProps = (state) => ({
-    visible: isRecordingModalVisible(state),
-    duration: recordingDuration(state),
-});
+const mapStateToProps = (state) => {
+    return {
+        visible: isRecordingModalVisible(state),
+        duration: recordingDuration(state),
+        channelId: state.entities.channels.currentChannelId,
+        rootId: state.views.rhs.selectedPostId,
+    };
+};
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
     cancel: cancelRecording,

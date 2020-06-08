@@ -18,6 +18,10 @@ Password: password
 
 To start sending a voice message you can either use the ```/voice``` slash command or the existing file attachment functionality as shown in the picture above.
 
+## Limitations
+
+This plugin only works on web client and desktop app. Mobile native apps are **not** [supported](https://developers.mattermost.com/extend/plugins/mobile/).
+
 ## Installation
 
 1. Download the latest version from the [release page](https://github.com/streamer45/mattermost-plugin-voice/releases).

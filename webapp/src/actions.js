@@ -1,4 +1,3 @@
-import Client from './client';
 import {
     OPEN_RECORDING_MODAL,
     CLOSE_RECORDING_MODAL,
@@ -7,6 +6,8 @@ import {
     CANCEL_RECORDING,
     UPDATE_RECORDING,
 } from './action_types';
+
+let Client = null;
 
 const openRecordingModal = () => (dispatch) => {
     dispatch({
@@ -40,15 +41,20 @@ export const sendRecording = (channelId, rootId) => (dispatch) => {
     closeRecordingModal()(dispatch);
 };
 
-export const recordVoiceMessage = (channelId, rootId) => (dispatch) => {
+export const recordVoiceMessage = (channelId, rootId, client) => (dispatch) => {
     // console.log('recordVoiceMessage');
     openRecordingModal()(dispatch);
-    Client.startRecording(channelId, rootId).then(() => {
+
+    if (client) {
+        Client = client;
+    }
+
+    client.startRecording(channelId, rootId).then(() => {
         dispatch({
             type: START_RECORDING,
         });
     });
-    Client.on('update', (duration) => {
+    client.on('update', (duration) => {
         // console.log(duration);
         dispatch({
             type: UPDATE_RECORDING,

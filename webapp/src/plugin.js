@@ -1,17 +1,25 @@
 import {FormattedMessage} from 'react-intl';
 
+import {getConfig} from 'mattermost-redux/selectors/entities/general';
+
 import PostType from './components/post_type';
 import Root from './components/root';
 import reducer from './reducer';
 import {recordVoiceMessage} from './actions';
 
+import Client from './client';
+
 export default class VoicePlugin {
     initialize(registry, store) {
+        const config = getConfig(store.getState());
+        const siteURL = config ? config.SiteURL : '';
+        const client = new Client(siteURL);
+
         registry.registerRootComponent(Root);
         registry.registerFileUploadMethod(
             <i className='icon fa fa-microphone'/>,
             () => {
-                recordVoiceMessage()(store.dispatch, store.getState);
+                recordVoiceMessage('', '', client)(store.dispatch, store.getState);
             },
             <FormattedMessage
                 id='plugin.upload'
@@ -22,7 +30,7 @@ export default class VoicePlugin {
         registry.registerReducer(reducer);
         registry.registerSlashCommandWillBePostedHook((message, args) => {
             if (message.trim() === '/voice') {
-                recordVoiceMessage(args.channel_id, args.root_id)(store.dispatch, store.getState);
+                recordVoiceMessage(args.channel_id, args.root_id, client)(store.dispatch, store.getState);
                 return {};
             }
             return {message, args};

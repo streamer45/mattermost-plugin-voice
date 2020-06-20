@@ -6,13 +6,13 @@ import {id as pluginId} from '../manifest';
 import Recorder from './recorder.js';
 
 export default class Client {
-    constructor() {
+    constructor(siteURL) {
         this._onUpdate = null;
         this.timerID = null;
         this.recorder = new Recorder({
-            workerURL: `/plugins/${pluginId}/public/recorder.worker.js`,
+            workerURL: `${siteURL}/plugins/${pluginId}/public/recorder.worker.js`,
         });
-        request.get(`/plugins/${pluginId}/config`).accept('application/json').then((res) => {
+        request.get(`${siteURL}/plugins/${pluginId}/config`).accept('application/json').then((res) => {
             this.recorder.init({
                 maxDuration: parseInt(res.body.VoiceMaxDuration, 10),
                 bitRate: parseInt(res.body.VoiceAudioBitrate, 10),

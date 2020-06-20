@@ -1,7 +1,7 @@
 import {css} from '@emotion/core';
 import {changeOpacity} from 'mattermost-redux/utils/theme_utils';
 
-import {id as pluginId} from '../manifest';
+import {id as pluginId} from '../../manifest';
 import './post_type.css';
 
 const React = window.React;
@@ -21,6 +21,7 @@ export default class PostType extends React.PureComponent {
   static propTypes = {
       post: PropTypes.object.isRequired,
       theme: PropTypes.object.isRequired,
+      siteURL: PropTypes.string.isRequired,
   }
 
   constructor(props) {
@@ -200,7 +201,7 @@ export default class PostType extends React.PureComponent {
                   preload='none'
               >
                   <source
-                      src={`/plugins/${pluginId}/recordings/${post.id}`}
+                      src={`${this.props.siteURL}/plugins/${pluginId}/recordings/${post.id}`}
                       type='audio/mpeg'
                   />
               </audio>

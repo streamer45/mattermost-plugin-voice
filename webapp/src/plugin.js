@@ -1,7 +1,5 @@
 import {FormattedMessage} from 'react-intl';
 
-import {getConfig} from 'mattermost-redux/selectors/entities/general';
-
 import PostType from './components/post_type';
 import Root from './components/root';
 import reducer from './reducer';
@@ -11,9 +9,7 @@ import Client from './client';
 
 export default class VoicePlugin {
     initialize(registry, store) {
-        const config = getConfig(store.getState());
-        const siteURL = config ? config.SiteURL : '';
-        const client = new Client(siteURL);
+        const client = new Client();
 
         registry.registerRootComponent(Root);
         registry.registerFileUploadMethod(

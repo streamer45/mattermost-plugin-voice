@@ -1,13 +1,13 @@
-import {getConfig} from 'mattermost-redux/selectors/entities/general';
+import {getPluginURL} from '../../utils.js';
 
 import PostType from './post_type';
 
 const connect = window.ReactRedux.connect;
 const bindActionCreators = window.Redux.bindActionCreators;
 
-const mapStateToProps = (state) => {
+const mapStateToProps = () => {
     return {
-        siteURL: getConfig(state).SiteURL,
+        pluginURL: getPluginURL(),
     };
 };
 

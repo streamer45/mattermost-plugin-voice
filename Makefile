@@ -159,7 +159,7 @@ dist:	apply server webapp bundle
 ## and otherwise falls back to trying to copy the plugin to a sibling mattermost-server directory.
 .PHONY: deploy
 deploy: dist
-	./build/bin/deploy $(PLUGIN_ID) dist/$(BUNDLE_NAME)
+	./build/bin/pluginctl deploy $(PLUGIN_ID) dist/$(BUNDLE_NAME)
 
 .PHONY: debug-deploy
 debug-deploy: debug-dist deploy

@@ -3,12 +3,13 @@
 package main
 
 import (
-	"strings"
+	"encoding/json"
 
-	"github.com/mattermost/mattermost-server/v5/model"
+	"github.com/mattermost/mattermost-server/v6/model"
 )
 
-var manifest *model.Manifest
+var manifest model.Manifest
+var wsActionPrefix string
 
 const manifestStr = `
 {
@@ -17,12 +18,13 @@ const manifestStr = `
   "description": "Mattermost plugin to enable voice messaging.",
   "homepage_url": "https://github.com/streamer45/mattermost-plugin-voice",
   "support_url": "https://github.com/streamer45/mattermost-plugin-voice/issues",
-  "version": "0.2.2",
-  "min_server_version": "5.12.0",
+  "release_notes_url": "https://github.com/streamer45/mattermost-plugin-voicereleases/tag/v0.2.2",
+  "version": "0.2.2+1796cdd",
+  "min_server_version": "6.3.0",
   "server": {
     "executables": {
-      "linux-amd64": "server/dist/plugin-linux-amd64",
       "darwin-amd64": "server/dist/plugin-darwin-amd64",
+      "linux-amd64": "server/dist/plugin-linux-amd64",
       "windows-amd64": "server/dist/plugin-windows-amd64.exe"
     },
     "executable": ""
@@ -70,5 +72,8 @@ const manifestStr = `
 `
 
 func init() {
-	manifest = model.ManifestFromJson(strings.NewReader(manifestStr))
+	if err := json.Unmarshal([]byte(manifestStr), &manifest); err != nil {
+		panic(err.Error())
+	}
+	wsActionPrefix = "custom_" + manifest.Id + "_"
 }

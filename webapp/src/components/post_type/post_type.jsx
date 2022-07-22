@@ -1,4 +1,4 @@
-import {css} from '@emotion/core';
+import {css} from '@emotion/react';
 import {changeOpacity} from 'mattermost-redux/utils/theme_utils';
 
 import './post_type.css';

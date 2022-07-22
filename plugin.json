@@ -4,8 +4,8 @@
     "description": "Mattermost plugin to enable voice messaging.",
     "homepage_url": "https://github.com/streamer45/mattermost-plugin-voice",
     "support_url": "https://github.com/streamer45/mattermost-plugin-voice/issues",
-    "version": "0.2.2",
-    "min_server_version": "5.12.0",
+    "version": "0.3.0",
+    "min_server_version": "6.3.0",
     "server": {
         "executables": {
             "linux-amd64": "server/dist/plugin-linux-amd64",
